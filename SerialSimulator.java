@@ -75,7 +75,6 @@ public class SerialSimulator implements Runnable, PConstants {
 
     p=parent;
     p.registerMethod("pre", this);
-    //p.registerMethod("serialEvent", this);    
     p.registerMethod("dispose", this);
 
     verbosity=false;
@@ -105,7 +104,6 @@ public class SerialSimulator implements Runnable, PConstants {
     stop();
 
     p.unregisterMethod("pre", this);
-    //p.unregisterMethod("serialEvent", this);
     p.unregisterMethod("dispose", this);
 
 

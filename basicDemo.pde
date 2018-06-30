@@ -1,6 +1,9 @@
 //import processing.serial.*;
 //Serial heartbeat; 
-SerialSimulator heartbeat; 
+SerialSimulator heartbeat;
+CustomDataGenerator usrDataGenerator;
+
+
 
 String val = "0.0"; // Wert von Arduino 
 
@@ -25,6 +28,8 @@ void setup() {
 
   heartbeat = new SerialSimulator(this, 1);
   heartbeat.verbosity=true;
+  usrDataGenerator = new CustomDataGenerator(this);
+  heartbeat.setDataSource(usrDataGenerator);
 
   size(1000, 1000);
   //pixelDensity(displayDensity());
@@ -92,7 +97,7 @@ void keyPressed() {
 }
 
 void serialEvent(SerialSimulator s) { 
-  println("User serial event invoked");
+  println("User serial event invoked "+s.buf.size());
 }
 
 //class FakeExtDataStreamer extends SerialSimulator {
@@ -111,3 +116,19 @@ void serialEvent(SerialSimulator s) {
 //    return ch.getBytes();
 //  }
 //}
+
+
+
+
+class CustomDataGenerator extends UserSourceSimulator {  
+
+  CustomDataGenerator(PApplet parent) {
+    super(parent);
+  }
+
+  @Override
+    public byte[] dataGenerator() {
+    String ch = p.nfs(p.random(20), 0, 8)+"\n";
+    return ch.getBytes();
+  }
+}

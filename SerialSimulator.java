@@ -55,8 +55,6 @@ public class SerialSimulator implements Runnable, PConstants {
   //----------------------
   ArrayList<Byte> buf;
   ArrayList<Byte> rxbuf;
-  int inBuffer = 0;
-  int readOffset = 0;
 
   int bufferUntilSize = 1;
   byte bufferUntilByte = 0;
@@ -173,8 +171,6 @@ public class SerialSimulator implements Runnable, PConstants {
   public void clear() {
     synchronized (buf) {
       buf.clear();
-      inBuffer = 0;
-      readOffset = 0;
     }
   }
 
@@ -199,8 +195,6 @@ public class SerialSimulator implements Runnable, PConstants {
     synchronized (buf) {
       int ret = buf.get(buf.size()-1) & 0xFF;
       buf.clear();
-      inBuffer = 0;
-      readOffset = 0;
       return ret;
     }
   }
@@ -228,12 +222,6 @@ public class SerialSimulator implements Runnable, PConstants {
       int ret = buf.get(0) & 0xFF;
       buf.remove(0);
 
-      readOffset++;
-      if (!dataReady()) {
-        buf.clear(); //Not needed as elements are being already removed
-        inBuffer = 0;
-        readOffset = 0;
-      }
       return ret;
     }
   }
@@ -256,8 +244,6 @@ public class SerialSimulator implements Runnable, PConstants {
       getArray(n, ret);
 
       buf.clear();
-      inBuffer = 0;
-      readOffset = 0;
 
       return ret;
     }
@@ -287,12 +273,6 @@ public class SerialSimulator implements Runnable, PConstants {
       int n=length;
       getArray(n, ret);
 
-      readOffset += length;
-      if (!dataReady()) {
-        buf.clear();
-        inBuffer = 0;
-        readOffset = 0;
-      }
       return ret;
     }
   }
@@ -320,12 +300,6 @@ public class SerialSimulator implements Runnable, PConstants {
 
       getArray(toCopy, dest);
 
-      readOffset += toCopy;      
-      if (!dataReady()) {
-        buf.clear();
-        inBuffer = 0;
-        readOffset = 0;
-      }
       return toCopy;
     }
   }
@@ -354,13 +328,6 @@ public class SerialSimulator implements Runnable, PConstants {
         byte[] dest = new byte[n];
 
         getArray(n, dest);        
-
-        readOffset += n;
-        if (!dataReady()) {
-          buf.clear();
-          inBuffer = 0;
-          readOffset = 0;
-        }
 
         return dest;
       } else
@@ -404,12 +371,6 @@ public class SerialSimulator implements Runnable, PConstants {
 
       getArray(toCopy, dest);
 
-      readOffset += toCopy;
-      if (!dataReady()) {
-        buf.clear();
-        inBuffer = 0;
-        readOffset = 0;
-      }
       return toCopy;
     }
   }
@@ -490,11 +451,6 @@ public class SerialSimulator implements Runnable, PConstants {
           toRead = 1;
         }
 
-        //// read an array of bytes and copy it into our buffer
-        //byte[] read = port.readBytes(toRead);
-        //System.arraycopy(read, 0, buffer, inBuffer, read.length);
-        //inBuffer += read.length;
-
         //NEXT is an expensive operations. Instead of ArraList, use some FIFO structure
         buf.add(rxbuf.get(0));
         rxbuf.remove(0);
@@ -532,9 +488,7 @@ public class SerialSimulator implements Runnable, PConstants {
    */
   public void stop() {
 
-    buf.clear();
-    inBuffer = 0;
-    readOffset = 0;
+    clear();
   }
 
   //NOT-IMPLEMENTED:   public void write(byte[] src) { }
@@ -596,5 +550,4 @@ public class SerialSimulator implements Runnable, PConstants {
       rxbuf.add(new Byte(b));
     }
   }
-
 }

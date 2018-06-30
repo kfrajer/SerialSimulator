@@ -1,0 +1,1 @@
+processing-java --force --sketch="C:\Users\C\Documents\Processing\CMsketches\ADSwork\myP3Libraries\basicDemo" --output="C:\Users\C\Documents\Processing\CMsketches\ADSwork\myP3Libraries\basicDemo\output" --export

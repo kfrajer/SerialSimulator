@@ -74,8 +74,10 @@ public class SerialSimulator implements Runnable, PConstants {
   public SerialSimulator(PApplet parent, float rate) {
 
     p=parent;
-    p.registerMethod("dispose", this);
     p.registerMethod("pre", this);
+    //p.registerMethod("serialEvent", this);    
+    p.registerMethod("dispose", this);
+
     verbosity=false;
 
     buf = new ArrayList<Byte>();
@@ -90,6 +92,8 @@ public class SerialSimulator implements Runnable, PConstants {
     serialEventMethod=findCallback("serialEvent");
     serialAvailableMethod=findCallback("serialAvailable");  //Needed????    
 
+    p.println("serialEventMethod", serialEventMethod);
+
     (main=new Thread(this)).start();
   }
 
@@ -100,6 +104,11 @@ public class SerialSimulator implements Runnable, PConstants {
 
     stop();
 
+    p.unregisterMethod("pre", this);
+    //p.unregisterMethod("serialEvent", this);
+    p.unregisterMethod("dispose", this);
+
+
     //Documentation suggest to shut down threads here. 
     //Some concepts here: https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/threadPrimitiveDeprecation.html
   }
@@ -109,41 +118,6 @@ public class SerialSimulator implements Runnable, PConstants {
    */
   public boolean active() {
     return main.isAlive();
-  }
-
-  /**
-   * 
-   */
-  public void pre() {
-    if (serialAvailableMethod != null && invokeSerialAvailable) {
-      invokeSerialAvailable = false;
-      try {
-        serialAvailableMethod.invoke(p, this);
-      } 
-      catch (Exception e) {
-        System.err.println("Error, disabling serialAvailable() for "+PORT_NAME);
-        System.err.println(e.getLocalizedMessage());
-        serialAvailableMethod = null;
-      }
-    }
-  }
-
-  /**
-   * 
-   */
-  private Method findCallback(final String name) {
-    try {
-      return p.getClass().getMethod(name, this.getClass());
-    } 
-    catch (Exception e) {
-    }
-    // Permit callback(Object) as alternative to callback(Serial).
-    try {
-      return p.getClass().getMethod(name, Object.class);
-    } 
-    catch (Exception e) {
-    }
-    return null;
   }
 
   /**
@@ -315,6 +289,8 @@ public class SerialSimulator implements Runnable, PConstants {
    */
   public byte[] readBytesUntil(int inByte) {
 
+    p.println("readBytesUntil", dataReady());
+
     if (!dataReady()) 
       return null;
 
@@ -403,7 +379,6 @@ public class SerialSimulator implements Runnable, PConstants {
     return buf.size()>0;
   }
 
-
   /**
    * 
    */
@@ -432,7 +407,9 @@ public class SerialSimulator implements Runnable, PConstants {
    * @param inByte character designated to mark the end of the data
    */
   public String readStringUntil(int inByte) {
+
     byte temp[] = readBytesUntil(inByte);
+
     if (temp == null) {
       return null;
     } else {
@@ -440,14 +417,13 @@ public class SerialSimulator implements Runnable, PConstants {
     }
   }
 
-
-
   /**
    * 
    */
   public void serialEvent(SerialSimulator s) {
     int toRead;
 
+    //p.println("CLASS serial event invoked");
     p.println(rxbuf.size() + " => " + buf.size());
 
     while (0 < (toRead = rxbuf.size())) {
@@ -529,8 +505,8 @@ public class SerialSimulator implements Runnable, PConstants {
         receiveNewIncomingData();
 
         if (verbosity) {
-          p.println(p.millis() + " Thread called " + rxbuf.size());
-          p.printArray(rxbuf.toArray());
+          p.println(p.millis() + " Thread called " + rxbuf.size() + " +++ " + buf.size());
+          //p.printArray(rxbuf.toArray());
         }
       }
 
@@ -548,10 +524,14 @@ public class SerialSimulator implements Runnable, PConstants {
    * 
    */
   public synchronized void receiveNewIncomingData() {
-    
+
     byte[] data=simPort.dataGenerator();    
 
     synchronized (rxbuf) {
+
+      if (verbosity) 
+        p.println("New data", data.length);
+
       for (int c=0; c<data.length; c++)       
         rxbuf.add(data[c]);
     }
@@ -562,5 +542,50 @@ public class SerialSimulator implements Runnable, PConstants {
    */
   void setDataSource(UserSourceSimulator port) {
     simPort=port;
+  }
+
+  /**
+   * 
+   */
+  public void pre() {
+    if (serialAvailableMethod != null && invokeSerialAvailable) {
+      invokeSerialAvailable = false;
+      try {
+        serialAvailableMethod.invoke(p, this);
+      } 
+      catch (Exception e) {
+        System.err.println("Error, disabling serialAvailable() for "+PORT_NAME);
+        System.err.println(e.getLocalizedMessage());
+        serialAvailableMethod = null;
+      }
+    }
+    
+    serialEvent(this);
+    
+  }
+
+  /**
+   * 
+   */
+  private Method findCallback(final String name) {
+
+    try {
+      //return p.getClass().getMethod(name, this.getClass());
+      //return p.getClass().getMethod(name, new Class[] {SerialSimulator.class});
+      return p.getClass().getMethod(name, SerialSimulator.class);
+    } 
+    catch (Exception e) {
+    }
+
+    // Permit callback(Object) as alternative to callback(Serial).
+    try {
+      //return p.getClass().getMethod(name, this.getClass());
+      //return this.getClass().getMethod(name, new Class[] {SerialSimulator.class});
+      return p.getClass().getMethod(name, Object.class);
+    } 
+    catch (Exception e) {
+    }   
+
+    return null;
   }
 }

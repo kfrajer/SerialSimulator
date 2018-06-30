@@ -24,6 +24,7 @@ void setup() {
   //heartbeat = new Serial(this, portName, 9600);
 
   heartbeat = new SerialSimulator(this, 1);
+  heartbeat.verbosity=true;
 
   size(1000, 1000);
   //pixelDensity(displayDensity());
@@ -90,8 +91,9 @@ void draw() {
 void keyPressed() {
 }
 
-//void serialEvent(SerialSimulator s) {
-//}
+void serialEvent(SerialSimulator s) { 
+  println("User serial event invoked");
+}
 
 //class FakeExtDataStreamer extends SerialSimulator {
 

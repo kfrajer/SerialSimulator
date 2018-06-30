@@ -64,6 +64,7 @@ public class SerialSimulator implements Runnable, PConstants {
   float rate;
   protected int duration;
   protected int endLapsedTime=-1;
+  UserSourceSimulator simPort;
 
 
 
@@ -83,6 +84,8 @@ public class SerialSimulator implements Runnable, PConstants {
 
     Float fob= new Float((1.0f/rate)*1000);
     duration=rate>0 ? fob.intValue() : 1000; //in msecs
+
+    simPort = new UserSourceSimulator(p);
 
     serialEventMethod=findCallback("serialEvent");
     serialAvailableMethod=findCallback("serialAvailable");  //Needed????    
@@ -311,15 +314,17 @@ public class SerialSimulator implements Runnable, PConstants {
    * @param inByte character designated to mark the end of the data
    */
   public byte[] readBytesUntil(int inByte) {
-    if (!dataReady()) {
+
+    if (!dataReady()) 
       return null;
-    }
+
 
     synchronized (buf) {
 
-      Integer iob= new Integer(inByte);
+      //Integer iob= new Integer(inByte);
+      //Byte anchor = new Byte(iob.byteValue());  
+      Byte anchor = new Byte((byte)inByte);  
 
-      Byte anchor = new Byte(iob.byteValue());  
       if (buf.contains(anchor)) {
         int idx=buf.indexOf(anchor);
 
@@ -350,10 +355,10 @@ public class SerialSimulator implements Runnable, PConstants {
 
     synchronized (buf) {
 
-      Integer iob= new Integer(inByte);
-
+      //Integer iob= new Integer(inByte);      
+      //Byte anchor = new Byte(iob.byteValue());
+      Byte anchor = new Byte((byte)inByte); 
       int n = -1;
-      Byte anchor = new Byte(iob.byteValue());
       if (buf.contains(anchor)) {
         int idx=buf.indexOf(anchor);
         n=idx+1;
@@ -443,7 +448,10 @@ public class SerialSimulator implements Runnable, PConstants {
   public void serialEvent(SerialSimulator s) {
     int toRead;
 
+    p.println(rxbuf.size() + " => " + buf.size());
+
     while (0 < (toRead = rxbuf.size())) {
+
       // this method can be called from the context of another thread
       synchronized (buf) {
         // read one byte at a time if the sketch is using serialEvent
@@ -454,6 +462,8 @@ public class SerialSimulator implements Runnable, PConstants {
         //NEXT is an expensive operations. Instead of ArraList, use some FIFO structure
         buf.add(rxbuf.get(0));
         rxbuf.remove(0);
+
+        p.println(rxbuf.size() + " => " + buf.size());
       }
       if (serialEventMethod != null) {
         if ((0 < bufferUntilSize && bufferUntilSize <= buf.size()) ||
@@ -533,27 +543,24 @@ public class SerialSimulator implements Runnable, PConstants {
     } //WHILE
   }
 
+
+  /**
+   * 
+   */
   public synchronized void receiveNewIncomingData() {
-    customSimulationDataGen();
-  }
+    
+    byte[] data=simPort.dataGenerator();    
 
-
-  /**
-   *  
-   */
-  public void customSimulationDataGen() {
-
-    byte[] data=dataGenerator();    
-
-    for (int c=0; c<data.length(); c++)       
-      rxbuf.add(data[c]);
+    synchronized (rxbuf) {
+      for (int c=0; c<data.length; c++)       
+        rxbuf.add(data[c]);
+    }
   }
 
   /**
-   *  Can be overriden by user
+   * 
    */
-  public byte[] dataGenerator() {
-    String ch = p.nfs(p.random(2), 0, 2)+"\n";
-    return ch.getBytes();
+  void setDataSource(UserSourceSimulator port) {
+    simPort=port;
   }
 }

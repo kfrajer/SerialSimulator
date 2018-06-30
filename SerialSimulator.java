@@ -192,7 +192,7 @@ public class SerialSimulator implements Runnable, PConstants {
    * @usage web_application
    */
   public int last() {
-    if (available()==0) {
+    if (!dataReady()) {
       return -1;
     }
 
@@ -225,7 +225,7 @@ public class SerialSimulator implements Runnable, PConstants {
    * 
    */
   public int read() {
-    if (available()==0) {
+    if (!dataReady()) {
       return -1;
     }
 
@@ -234,7 +234,7 @@ public class SerialSimulator implements Runnable, PConstants {
       buf.remove(0);
 
       readOffset++;
-      if (available()==0) {
+      if (!dataReady()) {
         buf.clear(); //Not needed as elements are being already removed
         inBuffer = 0;
         readOffset = 0;
@@ -250,7 +250,7 @@ public class SerialSimulator implements Runnable, PConstants {
    * @usage web_application
    */
   public byte[] readBytes() {
-    if (available()==0) {
+    if (!dataReady()) {
       return null;
     }
 
@@ -288,7 +288,7 @@ public class SerialSimulator implements Runnable, PConstants {
    * @param max the maximum number of bytes to read
    */
   public byte[] readBytes(int max) {
-    if (available()==0) {
+    if (!dataReady()) {
       return null;
     }
 
@@ -309,7 +309,7 @@ public class SerialSimulator implements Runnable, PConstants {
       //}
 
       readOffset += length;
-      if (available()==0) {
+      if (!dataReady()) {
         buf.clear();
         inBuffer = 0;
         readOffset = 0;
@@ -329,7 +329,7 @@ public class SerialSimulator implements Runnable, PConstants {
    * that will fit are read.
    */
   public int readBytes(byte[] dest) {
-    if (available()==0) {
+    if (!dataReady()) {
       return 0;
     }
 
@@ -351,7 +351,7 @@ public class SerialSimulator implements Runnable, PConstants {
       //}
 
       readOffset += toCopy;      
-      if (available()==0) {
+      if (!dataReady()) {
         buf.clear();
         inBuffer = 0;
         readOffset = 0;
@@ -367,7 +367,7 @@ public class SerialSimulator implements Runnable, PConstants {
    * @param inByte character designated to mark the end of the data
    */
   public byte[] readBytesUntil(int inByte) {
-    if (available()==0) {
+    if (!dataReady()) {
       return null;
     }
 
@@ -405,7 +405,7 @@ public class SerialSimulator implements Runnable, PConstants {
         //}
 
         readOffset += n;
-        if (available()==0) {
+        if (!dataReady()) {
           buf.clear();
           inBuffer = 0;
           readOffset = 0;
@@ -426,7 +426,7 @@ public class SerialSimulator implements Runnable, PConstants {
    * @param dest passed in byte array to be altered
    */
   public int readBytesUntil(int inByte, byte[] dest) {
-    if (available()==0) {
+    if (!dataReady()) {
       return 0;
     }
 
@@ -479,7 +479,7 @@ public class SerialSimulator implements Runnable, PConstants {
       //System.arraycopy(buffer, readOffset, dest, 0, toCopy);
 
       readOffset += toCopy;
-      if (available()==0) {
+      if (!dataReady()) {
         buf.clear();
         inBuffer = 0;
         readOffset = 0;
@@ -503,6 +503,10 @@ public class SerialSimulator implements Runnable, PConstants {
       buf.remove(i);
     }
   }
+  
+  boolean dataReady(){
+   return buf.size()>0; 
+  }
 
 
   /**
@@ -516,7 +520,7 @@ public class SerialSimulator implements Runnable, PConstants {
    * 
    */
   public String readString() {
-    if (available()==0) {
+    if (!dataReady()) {
       return null;
     }
     return new String(readBytes());

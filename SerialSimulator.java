@@ -539,15 +539,21 @@ public class SerialSimulator implements Runnable, PConstants {
 
 
   /**
-   *  Can be overriden by user
+   *  
    */
   public void customSimulationDataGen() {
 
-    String ch = p.nfs(p.random(2), 0, 2)+"\n";
+    byte[] data=dataGenerator();    
 
-    for (int c=0; c<ch.length(); c++) {
-      byte b = (byte) ch.charAt(c);
-      rxbuf.add(new Byte(b));
-    }
+    for (int c=0; c<data.length(); c++)       
+      rxbuf.add(data[c]);
+  }
+
+  /**
+   *  Can be overriden by user
+   */
+  public byte[] dataGenerator() {
+    String ch = p.nfs(p.random(2), 0, 2)+"\n";
+    return ch.getBytes();
   }
 }

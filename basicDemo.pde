@@ -1,6 +1,6 @@
 //import processing.serial.*;
 //Serial heartbeat; 
-SerialSimulator heartbeat; 
+FakeExtDataStreamer heartbeat; 
 
 String val = "0.0"; // Wert von Arduino 
 
@@ -23,7 +23,7 @@ void setup() {
   //String portName = Serial.list()[7];
   //heartbeat = new Serial(this, portName, 9600);
 
-  heartbeat = new SerialSimulator(this, 1);
+  heartbeat = new FakeExtDataStreamer(this, 1);
 
   size(1000, 1000);
   //pixelDensity(displayDensity());
@@ -92,4 +92,12 @@ void keyPressed() {
 }
 
 void serialEvent(SerialSimulator s) {
+}
+
+class FakeExtDataStreamer extends SerialSimulator{
+  
+  
+  FakeExtDataStreamer(){
+    super(this,2);
+  }
 }

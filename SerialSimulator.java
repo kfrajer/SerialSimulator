@@ -178,9 +178,9 @@ public class SerialSimulator implements Runnable, PConstants {
     }
   }
 
-  //public boolean getCTS() { }
-  //public boolean getDSR() {}
-  // public static Map<String, String> getProperties(String portName) { }
+  //NOT-IMPLEMENTED:   public boolean getCTS() { }
+  //NOT-IMPLEMENTED:   public boolean getDSR() {}
+  //NOT-IMPLEMENTED:   public static Map<String, String> getProperties(String portName) { }
 
 
   /** 
@@ -212,14 +212,9 @@ public class SerialSimulator implements Runnable, PConstants {
     return (char)last();
   }
 
-  ///**
-  // * Returns current simmulator
-  // */
-  //public static String[] list() {
 
-  //  String[] simports = {PORT_NAME};    
-  //  return simports;
-  //}
+  //NOT-IMPLEMENTED:  public static String[] list() { }
+
 
   /**
    * 
@@ -259,14 +254,6 @@ public class SerialSimulator implements Runnable, PConstants {
       byte[] ret = new byte[n];
 
       getArray(n, ret);
-      //for (int i=0; i<n; i++) {
-      //  ret[i]=buf.get(i).byteValue();
-      //}
-
-      ////Remove elements in array
-      //for (int i=n-1; i>=0; i--) {
-      //  buf.remove(i);
-      //}
 
       buf.clear();
       inBuffer = 0;
@@ -299,14 +286,6 @@ public class SerialSimulator implements Runnable, PConstants {
 
       int n=length;
       getArray(n, ret);
-      //for (int i=0; i<n; i++) {
-      //  ret[i]=buf.get(i).byteValue();
-      //}
-
-      ////Remove elements in array
-      //for (int i=n-1; i>=0; i--) {
-      //  buf.remove(i);
-      //}
 
       readOffset += length;
       if (!dataReady()) {
@@ -340,15 +319,6 @@ public class SerialSimulator implements Runnable, PConstants {
       }
 
       getArray(toCopy, dest);
-      //int n=toCopy;
-      //for (int i=0; i<n; i++) {
-      //  ret[i]=buf.get(i).byteValue();
-      //}
-
-      ////Remove elements in array
-      //for (int i=n-1; i>=0; i--) {
-      //  buf.remove(i);
-      //}
 
       readOffset += toCopy;      
       if (!dataReady()) {
@@ -372,20 +342,10 @@ public class SerialSimulator implements Runnable, PConstants {
     }
 
     synchronized (buf) {
-      //// look for needle in buffer
-      //int found = -1;
-      //for (int i=readOffset; i < inBuffer; i++) {
-      //  if (buffer[i] == (byte)inByte) {
-      //    found = i;
-      //    break;
-      //  }
-      //}
-      //if (found == -1) {
-      //  return null;
-      //}
+
       Integer iob= new Integer(inByte);
 
-      Byte anchor = new Byte(iob.byteValue());  //PApplet.byte(inByte));
+      Byte anchor = new Byte(iob.byteValue());  
       if (buf.contains(anchor)) {
         int idx=buf.indexOf(anchor);
 
@@ -393,16 +353,7 @@ public class SerialSimulator implements Runnable, PConstants {
         int n = idx+1;
         byte[] dest = new byte[n];
 
-        getArray(n, dest);
-
-        //for (int i=0; i<n; i++) {
-        //  dest[i]=buf.get(i);
-        //}
-
-        ////Remove elements in array
-        //for (int i=n-1; i>=0; i--) {
-        //  buf.remove(i);
-        //}
+        getArray(n, dest);        
 
         readOffset += n;
         if (!dataReady()) {
@@ -431,17 +382,6 @@ public class SerialSimulator implements Runnable, PConstants {
     }
 
     synchronized (buf) {
-      //// look for needle in buffer
-      //int found = -1;
-      //for (int i=readOffset; i < inBuffer; i++) {
-      //  if (buffer[i] == (byte)inByte) {
-      //    found = i;
-      //    break;
-      //  }
-      //}
-      //if (found == -1) {
-      //  return 0;
-      //}
 
       Integer iob= new Integer(inByte);
 
@@ -450,19 +390,6 @@ public class SerialSimulator implements Runnable, PConstants {
       if (buf.contains(anchor)) {
         int idx=buf.indexOf(anchor);
         n=idx+1;
-
-        //Build returning array
-        n = idx+1;
-        //byte[] dest = new byte[toCopy];        
-
-        //for (int i=0; i<n; i++) {
-        //  dest[i]=buf.get(i);
-        //}
-
-        ////Remove elements in array
-        //for (int i=n-1; i>=0; i--) {
-        //  buf.remove(i);
-        //}
       } else
         return 0;
 
@@ -476,7 +403,6 @@ public class SerialSimulator implements Runnable, PConstants {
       }
 
       getArray(toCopy, dest);
-      //System.arraycopy(buffer, readOffset, dest, 0, toCopy);
 
       readOffset += toCopy;
       if (!dataReady()) {
@@ -503,9 +429,12 @@ public class SerialSimulator implements Runnable, PConstants {
       buf.remove(i);
     }
   }
-  
-  boolean dataReady(){
-   return buf.size()>0; 
+
+  /**
+   * 
+   */
+  boolean dataReady() {
+    return buf.size()>0;
   }
 
 
@@ -595,8 +524,8 @@ public class SerialSimulator implements Runnable, PConstants {
   }
 
 
-  // public void setDTR(boolean state) { }
-  // public void setRTS(boolean state) { }
+  //NOT-IMPLEMENTED:   public void setDTR(boolean state) { }
+  //NOT-IMPLEMENTED:   public void setRTS(boolean state) { }
 
   /**
    * 
@@ -608,9 +537,9 @@ public class SerialSimulator implements Runnable, PConstants {
     readOffset = 0;
   }
 
-  // public void write(byte[] src) { }
-  // public void write(int src) { }
-  // public void write(String src) { }
+  //NOT-IMPLEMENTED:   public void write(byte[] src) { }
+  //NOT-IMPLEMENTED:   public void write(int src) { }
+  //NOT-IMPLEMENTED:   public void write(String src) { }
 
 
   // ========================================================================================
@@ -668,38 +597,4 @@ public class SerialSimulator implements Runnable, PConstants {
     }
   }
 
-
-
-
-
-
-
-
-  ///**
-  // * 
-  // */
-  //public String readStringUntil(char c) {
-
-  //  String anchor=str(c);
-  //  String out;
-
-  //  if (buf.contains(anchor)) {
-  //    int idx=buf.indexOf(anchor);
-
-  //    //Build returning array
-  //    out = "";
-  //    int n=idx+1;
-  //    for (int i=0; i<n; i++) {
-  //      out+=buf.get(i);
-  //    }
-
-  //    //Remove elements in array
-  //    for (int i=n-1; i>=0; i--) {
-  //      buf.remove(i);
-  //    }
-  //  } else
-  //    return null;
-
-  //  return out;
-  //}
 }

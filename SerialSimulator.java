@@ -22,6 +22,12 @@
 
 //package com.kfrajer.serialsim;
 
+//TO DO:
+//CircularBuffer
+//Data from text file
+//Data from mouse(Right, Center, Left) click
+//Data from keyboard
+
 
 import processing.core.*;
 import java.util.ArrayList;

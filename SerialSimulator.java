@@ -23,10 +23,15 @@
 //package com.kfrajer.serialsim;
 
 //TO DO:
-//CircularBuffer
-//Data from text file
-//Data from mouse(Right, Center, Left) click
-//Data from keyboard
+//[*] Test branching and merging => Document
+//[*] Document main code to create reference using JavaDocs: https://sites.google.com/site/advanceddevelopmentsolutions/home/software/javadocs
+//[*] CircularTbuffer class => Multiple channel handling or even cluster channel rotation
+//[*] Data from text file
+//[*] Data from mouse(Right, Center, Left) click
+//[*] Data from keyboard => Reference https://forum.processing.org/two/discussion/25477/capturing-keyevent-in-own-class-registermethod
+//[*] Need to read threading so to work with buffers. Check: 
+//    https://docs.oracle.com/javase/1.5.0/docs/api/java/util/ArrayList.html    
+//    https://docs.oracle.com/javase/tutorial/essential/concurrency/syncrgb.html
 
 
 import processing.core.*;
